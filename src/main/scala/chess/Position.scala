@@ -10,7 +10,7 @@ object PositionUtils {
 
     def valid(value: Int): Boolean = value >= 0 || value <= 7
 
-    valid(position._1) && valid(position._2)
+    valid(position.x) && valid(position.y)
   }
 
   def addPositions(position1: Position, position2: Position): Position = {

@@ -8,6 +8,4 @@ case object Rook extends PieceType
 case object Queen extends PieceType
 case object King extends PieceType
 
-case class Piece(pieceType: PieceType, colour: Colour) {
-
-}
+case class Piece(pieceType: PieceType, colour: Colour) {}

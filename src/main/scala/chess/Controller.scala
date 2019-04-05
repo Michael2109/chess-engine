@@ -2,6 +2,10 @@ package chess
 
 class Controller {
 
+  def applyNextMove(chessboard: Chessboard): Chessboard ={
+    chessboard
+  }
+
   def createInitialChessboard(): Chessboard = {
     val pieces: List[List[Option[Piece]]] = List(
       List(
