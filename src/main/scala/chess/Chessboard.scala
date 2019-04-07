@@ -1,22 +1,20 @@
 package chess
 
-case class Chessboard(pieces: List[List[Option[Piece]]], nextColour: Colour) {
-  override def equals(that: Any): Boolean = ???
-}
+case class Chessboard(pieces: List[List[Option[Piece]]], nextColour: Colour) {}
 
-case object ChessboardUtils {
+case object Chessboard {
 
   def pieceAtPosition(chessboard: Chessboard, position: Position): Option[Piece] = {
     chessboard.pieces(position.y)(position.x)
   }
 
-  def makeMove(chessboard: Chessboard, move: Move): Unit = {
+  def makeMove(chessboard: Chessboard, move: Move): Chessboard = {
     move match {
-      case standardMove: StandardMove => {
+      case standardMove: StandardMove =>
         val pieceToMove = pieceAtPosition(chessboard, standardMove.startPosition)
         val movedPiece = setPiece(chessboard, pieceToMove, standardMove.endPosition)
         val newChessboard = setPiece(movedPiece, None, standardMove.startPosition)
-      }
+        newChessboard
     }
   }
 

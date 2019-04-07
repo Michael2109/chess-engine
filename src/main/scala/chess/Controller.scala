@@ -2,8 +2,16 @@ package chess
 
 class Controller {
 
-  def applyNextMove(chessboard: Chessboard): Chessboard ={
-    chessboard
+  var chessboard = createInitialChessboard()
+
+  def resetChessboard(): Unit ={
+    chessboard = createInitialChessboard()
+  }
+
+  def applyNextMove(): Move ={
+    val bestMove = Decisions.getBestMove(chessboard)
+    chessboard = Chessboard.makeMove(chessboard, bestMove)
+    bestMove
   }
 
   def createInitialChessboard(): Chessboard = {
@@ -28,10 +36,10 @@ class Controller {
         Option.apply(Piece(Pawn, Black)),
         Option.apply(Piece(Pawn, Black))
       ),
-      List(),
-      List(),
-      List(),
-      List(),
+      List(None, None, None, None, None, None, None, None),
+      List(None, None, None, None, None, None, None, None),
+      List(None, None, None, None, None, None, None, None),
+      List(None, None, None, None, None, None, None, None),
       List(
         Option.apply(Piece(Pawn, White)),
         Option.apply(Piece(Pawn, White)),

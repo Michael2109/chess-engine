@@ -17,6 +17,24 @@ repositories {
     jcenter()
 }
 
+sourceSets {
+    main {
+        scala {
+            srcDir 'src/main/scala'
+        }
+        resources {
+            srcDir 'resources'
+        }
+    }
+
+    test {
+        scala {
+            srcDir 'test'
+        }
+    }
+}
+
+
 // In this section you declare the dependencies for your production and test code
 dependencies {
     // We use Scala 2.11 in our library project

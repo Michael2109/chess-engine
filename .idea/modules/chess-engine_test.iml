@@ -6,6 +6,7 @@
     <content url="file://$MODULE_DIR$/../../src/test">
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/scala" isTestSource="true" />
     </content>
+    <content url="file://$MODULE_DIR$/../../test" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="chess-engine_main" />
