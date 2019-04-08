@@ -8,7 +8,7 @@ case class Position(xInit: Int, yInit: Int) {
 object Position {
   def validPosition(position: Position): Boolean = {
 
-    def valid(value: Int): Boolean = value >= 0 || value <= 7
+    def valid(value: Int): Boolean = value >= 0 && value <= 7
 
     valid(position.x) && valid(position.y)
   }

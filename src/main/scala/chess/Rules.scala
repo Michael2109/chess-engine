@@ -94,7 +94,7 @@ object Rules {
       case StandardMove (startPosition, endPosition) =>
         Position.validPosition(startPosition) && Position.validPosition(endPosition) &&
           Chessboard.pieceColourAtPosition(chessboard, startPosition).isDefined &&
-          Chessboard.pieceColourAtPosition(chessboard, startPosition).equals(Chessboard.pieceColourAtPosition(chessboard, endPosition))
+          !Chessboard.pieceColourAtPosition(chessboard, startPosition).equals(Chessboard.pieceColourAtPosition(chessboard, endPosition))
     }
   }
 
