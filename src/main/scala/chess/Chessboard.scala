@@ -8,6 +8,13 @@ case object Chessboard {
     chessboard.pieces(position.y)(position.x)
   }
 
+  def pieceColourAtPosition(chessboard: Chessboard, position: Position): Option[Colour] = {
+    pieceAtPosition(chessboard, position) match {
+      case Some(piece) => Some(piece.colour)
+      case None => None
+    }
+  }
+
   def makeMove(chessboard: Chessboard, move: Move): Chessboard = {
     move match {
       case standardMove: StandardMove =>

@@ -19,8 +19,19 @@ class Panel(controller: Controller) extends JPanel{
     // Draw the squares
 
     // Draw the pieces
-    controller.chessboard.pieces
-    g.drawImage(image, 0, 0, this)
+    controller.chessboard.pieces.zipWithIndex.foreach {
+      case(pieces, y) => pieces.zipWithIndex.foreach {
+        case (piece, x) => {
+          piece match {
+            case Some(value) =>
+              val image = getChessPieceImage(value)
+              g.drawImage(image, x * 64 + image.getWidth / 2, y * 64 + image.getHeight / 2, this)
+            case None =>
+          }
+        }
+      }
+    }
+
   }
 
   controller.applyNextMove()

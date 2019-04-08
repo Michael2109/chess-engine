@@ -9,7 +9,7 @@ class Frame extends JFrame {
 
   val controller = new Controller()
 
-  getContentPane.add(new Panel(controller))
+  add(new Panel(controller))
   setSize(700, 700)
   setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
