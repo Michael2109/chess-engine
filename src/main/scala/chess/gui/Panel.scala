@@ -54,8 +54,9 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
 
         val endPositionX = endPosition.x * squareWidth
         val endPositionY = endPosition.y * squareHeight
-        g.setColor(Color.YELLOW)
+        g.setColor(Color.YELLOW.darker())
         g.fillRect(startPositionX, startPositionY, squareWidth, squareHeight)
+        g.setColor(Color.YELLOW)
         g.fillRect(endPositionX, endPositionY, squareWidth, squareHeight)
       }
     }

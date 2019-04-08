@@ -48,64 +48,65 @@ object Rules {
   }
 
   def pawnMoves(chessboard: Chessboard, position: Position, colour: Colour): List[Move] = {
-
-    /**
-      *
-      *
-    let direction =
-        if colour == White
-          then (0, -1)
-          else (0, 1)
-  let forwardMoves = movesInDirection chessboard position position direction colour 1
-
-  let attackDirections =
-        if colour == White
-          then [(-1, -1), (1, -1)]
-          else [(-1, 1), (1, 1)]
-
-  let attackMoves =
-        filter (takingAPiece chessboard) $ concat $ map (\attackDirection -> movesInDirection chessboard position position attackDirection colour 1) attackDirections
-
-  filter
-    (\move ->
-       case move of
-         Move startPos endPos -> pieceColourAtPosition chessboard endPos == Nothing)
-    forwardMoves ++ attackMoves
+    val forwardDirection = if (colour == White) Position(0, -1) else Position(0, 1)
+    val forwardMove: List[Move]= movesInDirection(chessboard, position, forwardDirection, colour, 1)
 
 
+    val attackDirections: List[Position] = if (colour == White) List(Position(-1, -1), Position(1, -1)) else List(Position(-1, 1), Position(1, 1))
+    val attackMoves: List[Move] = attackDirections.map(direction => movesInDirection(chessboard, position, direction, colour, 1)).flatten.filter(takingAPiece(chessboard, _))
 
-      */
+    println(attackMoves)
 
-    List()
+    forwardMove.filter(move => move match {
+      case StandardMove(_, endPosition) => Chessboard.pieceColourAtPosition(chessboard, endPosition).isEmpty
+    }) ++ attackMoves
   }
 
   private def movesInDirection(chessboard: Chessboard, currentPosition: Position, direction: Position, colour: Colour, movesLeft: Int): List[Move] = {
 
-    def movesInDirection(chessboard: Chessboard, startPosition: Position, currentPosition: Position, direction: Position, colour: Colour, movesLeft: Int): List[Move] =
-    {
-      List()
+    def movesInDirection(chessboard: Chessboard, startPosition: Position, currentPosition: Position, direction: Position, colour: Colour, movesLeft: Int): List[Move] = {
+      val nextPosition = Position.addPositions(currentPosition, direction)
+      val nextMove = StandardMove(startPosition, nextPosition)
+      if(movesLeft != 0 && Position.validPosition(nextPosition)){
+        if(takingAPiece(chessboard, nextMove)){
+          println("Taking a piece: " + nextMove)
+          List(nextMove)
+        } else if(movingToEmptySpace(chessboard, nextMove)){
+          println("Moving to empty space: " + nextMove)
+          movesInDirection(chessboard, startPosition, nextPosition, direction, colour, (movesLeft - 1)) ++ List(nextMove)
+        } else {
+          List()
+        }
+      } else {
+        List()
+      }
+
     }
 
     movesInDirection(chessboard, currentPosition, currentPosition, direction, colour, movesLeft)
   }
 
-  private def takingAPiece(chessboard: Chessboard, move: Move): Boolean ={
+  private def takingAPiece(chessboard: Chessboard, move: Move): Boolean = {
     move match {
-      case StandardMove (startPosition, endPosition) =>
-        Position.validPosition(startPosition) && Position.validPosition(endPosition) &&
-          Chessboard.pieceColourAtPosition(chessboard, startPosition).isDefined &&
-          !Chessboard.pieceColourAtPosition(chessboard, startPosition).equals(Chessboard.pieceColourAtPosition(chessboard, endPosition))
+      case StandardMove(startPosition, endPosition) =>
+        val pieceColourStart = Chessboard.pieceColourAtPosition(chessboard, startPosition)
+        val pieceColourEnd = Chessboard.pieceColourAtPosition(chessboard, endPosition)
+        val differentColours = pieceColourStart match {
+          case Some(colourA) => pieceColourEnd match {
+            case Some(colourB) => colourB != colourA
+            case None => false
+          }
+          case None => false
+        }
+        Position.validPosition(startPosition) && Position.validPosition(endPosition) && differentColours
     }
   }
 
-  private def movingToEmptySpace(chessboard: Chessboard, move: Move): Boolean ={
+  private def movingToEmptySpace(chessboard: Chessboard, move: Move): Boolean = {
     move match {
-      case StandardMove(_, endPosition) => {
-        Chessboard.pieceAtPosition(chessboard, endPosition) match {
-          case Some(_) => false
-          case None => true
-        }
-      }
+      case StandardMove(_, endPosition) =>
+        Chessboard.pieceAtPosition(chessboard, endPosition).isEmpty
+
     }
   }
 }
