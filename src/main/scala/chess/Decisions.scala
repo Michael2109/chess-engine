@@ -3,6 +3,11 @@ package chess
 object Decisions {
 
   def getBestMove(chessboard: Chessboard): Move = {
+    chessboard.pieces.zipWithIndex.map {
+      case(row, y) => row.zipWithIndex.map {
+        case (piece, x) => Rules.possibleMoves(chessboard, Chessboard.pieceAtPosition(chessboard, Position(x, y))
+      }
+    }
     StandardMove(Position(1,1), Position(2,2))
   }
 
