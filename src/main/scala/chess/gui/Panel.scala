@@ -1,22 +1,23 @@
 package chess.gui
 
-import java.awt.{Color, Graphics}
 import java.awt.event.{MouseEvent, MouseListener}
-import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
-import java.nio.file.Paths
-import java.util.Scanner
+import java.awt.{Color, Graphics}
 
 import chess._
 import javax.imageio.ImageIO
 import javax.swing.JPanel
 
+import scala.collection.mutable.ListBuffer
+
 class Panel(controller: Controller) extends JPanel with MouseListener {
 
-  var selectedMoves: List[Move] = List()
+  val selectedMoves: ListBuffer[Move] = ListBuffer()
 
   val squareWidth = 80
   val squareHeight = 80
+
+
 
   addMouseListener(this)
 
@@ -27,7 +28,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
 
     // Draw the pieces
     controller.chessboard.pieces.zipWithIndex.foreach {
-      case(pieces, yIndex) => pieces.zipWithIndex.foreach {
+      case (pieces, yIndex) => pieces.zipWithIndex.foreach {
         case (piece, xIndex) => {
 
           val xPos = xIndex * squareWidth
@@ -65,7 +66,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
 
     // Draw the pieces
     controller.chessboard.pieces.zipWithIndex.foreach {
-      case(pieces, yIndex) => pieces.zipWithIndex.foreach {
+      case (pieces, yIndex) => pieces.zipWithIndex.foreach {
         case (piece, xIndex) => {
 
           val xPos = xIndex * squareWidth
@@ -82,24 +83,29 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
     }
   }
 
-  controller.applyNextMove()
+  private def isAI(colour: Colour): Boolean ={
+    colour match {
+      case White => false
+      case Black => true
+    }
+  }
 
-  def getChessPieceImage(piece: Piece): BufferedImage ={
+  def getChessPieceImage(piece: Piece): BufferedImage = {
     piece match {
-      case Piece (pieceType, colour) =>
+      case Piece(pieceType, colour) =>
         val pathString = s"chesspieces/${colourToString(colour)}${pieceTypeToString(pieceType)}.png"
         ImageIO.read(getClass().getClassLoader().getResource(pathString))
     }
   }
 
-  def colourToString(colour: Colour): String ={
+  def colourToString(colour: Colour): String = {
     colour match {
       case White => "w"
       case Black => "b"
     }
   }
 
-  def pieceTypeToString(pieceType: PieceType): String ={
+  def pieceTypeToString(pieceType: PieceType): String = {
     pieceType match {
       case Pawn => "P"
       case Rook => "R"
@@ -115,8 +121,34 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
   override def mousePressed(e: MouseEvent): Unit = {
 
     val selectedPosition = Position(e.getX / squareWidth, e.getY / squareHeight)
-    selectedMoves = Rules.possibleMoves(controller.chessboard, selectedPosition)
-    repaint()
+
+    if (e.getButton == 1) {
+      selectedMoves.clear()
+      Chessboard.pieceColourAtPosition(controller.chessboard, selectedPosition) match {
+        case Some(colour) => if (colour.equals(controller.chessboard.nextColour)) {
+          selectedMoves ++= Rules.possibleMoves(controller.chessboard, selectedPosition)
+          repaint()
+        }
+        case None =>
+      }
+    } else if (e.getButton == 3) {
+      val appliedMove = selectedMoves.find {
+        case StandardMove(_, endPosition) => endPosition.equals(selectedPosition)
+      }
+      appliedMove match {
+        case Some(move) => {
+          controller.applyMove(move)
+          selectedMoves.clear()
+        }
+        case None =>
+      }
+      repaint()
+
+      if(isAI(controller.chessboard.nextColour)){
+        controller.applyBestMove()
+        repaint()
+      }
+    }
   }
 
   override def mouseReleased(e: MouseEvent): Unit = ()

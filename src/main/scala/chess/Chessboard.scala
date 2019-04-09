@@ -21,7 +21,7 @@ case object Chessboard {
         val pieceToMove = pieceAtPosition(chessboard, standardMove.startPosition)
         val movedPiece = setPiece(chessboard, pieceToMove, standardMove.endPosition)
         val newChessboard = setPiece(movedPiece, None, standardMove.startPosition)
-        newChessboard
+        Chessboard.changeChessboardColour(newChessboard)
     }
   }
 
@@ -30,7 +30,6 @@ case object Chessboard {
     val newPieces: List[List[Option[Piece]]] = chessboard.pieces.updated(position.y, newRow)
     Chessboard(newPieces, chessboard.nextColour)
   }
-
 
   def getPieces(chessboard: Chessboard): List[Piece] = {
     chessboard.pieces.flatten.filter(_.isDefined).map(_.get)
@@ -41,7 +40,7 @@ case object Chessboard {
   }
 
   def changeChessboardColour(chessboard: Chessboard): Chessboard = {
-    Chessboard(chessboard.pieces, chessboard.nextColour)
+    Chessboard(chessboard.pieces, changeColour(chessboard.nextColour))
   }
 
   def changeColour(colour: Colour): Colour = {

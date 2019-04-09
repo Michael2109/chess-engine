@@ -49,13 +49,11 @@ object Rules {
 
   def pawnMoves(chessboard: Chessboard, position: Position, colour: Colour): List[Move] = {
     val forwardDirection = if (colour == White) Position(0, -1) else Position(0, 1)
-    val forwardMove: List[Move]= movesInDirection(chessboard, position, forwardDirection, colour, 1)
+    val forwardMove: List[Move] = movesInDirection(chessboard, position, forwardDirection, colour, 1)
 
 
     val attackDirections: List[Position] = if (colour == White) List(Position(-1, -1), Position(1, -1)) else List(Position(-1, 1), Position(1, 1))
     val attackMoves: List[Move] = attackDirections.map(direction => movesInDirection(chessboard, position, direction, colour, 1)).flatten.filter(takingAPiece(chessboard, _))
-
-    println(attackMoves)
 
     forwardMove.filter(move => move match {
       case StandardMove(_, endPosition) => Chessboard.pieceColourAtPosition(chessboard, endPosition).isEmpty
@@ -67,12 +65,10 @@ object Rules {
     def movesInDirection(chessboard: Chessboard, startPosition: Position, currentPosition: Position, direction: Position, colour: Colour, movesLeft: Int): List[Move] = {
       val nextPosition = Position.addPositions(currentPosition, direction)
       val nextMove = StandardMove(startPosition, nextPosition)
-      if(movesLeft != 0 && Position.validPosition(nextPosition)){
-        if(takingAPiece(chessboard, nextMove)){
-          println("Taking a piece: " + nextMove)
+      if (movesLeft != 0 && Position.validPosition(nextPosition)) {
+        if (takingAPiece(chessboard, nextMove)) {
           List(nextMove)
-        } else if(movingToEmptySpace(chessboard, nextMove)){
-          println("Moving to empty space: " + nextMove)
+        } else if (movingToEmptySpace(chessboard, nextMove)) {
           movesInDirection(chessboard, startPosition, nextPosition, direction, colour, (movesLeft - 1)) ++ List(nextMove)
         } else {
           List()

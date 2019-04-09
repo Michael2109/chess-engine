@@ -2,7 +2,7 @@ package chess
 
 object Decisions {
 
-  def getBestMove(Chessboard: Chessboard): Move = {
+  def getBestMove(chessboard: Chessboard): Move = {
     StandardMove(Position(1,1), Position(2,2))
   }
 

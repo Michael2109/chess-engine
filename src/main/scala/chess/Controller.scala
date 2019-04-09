@@ -8,10 +8,12 @@ class Controller {
     chessboard = createInitialChessboard()
   }
 
-  def applyNextMove(): Move ={
-    val bestMove = Decisions.getBestMove(chessboard)
-    chessboard = Chessboard.makeMove(chessboard, bestMove)
-    bestMove
+  def applyMove(move: Move): Unit ={
+    chessboard = Chessboard.makeMove(chessboard, move)
+  }
+
+  def applyBestMove(): Unit ={
+    chessboard = Chessboard.makeMove(chessboard, Decisions.getBestMove(chessboard))
   }
 
   def createInitialChessboard(): Chessboard = {
