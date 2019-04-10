@@ -2,6 +2,22 @@ package chess
 
 object Rules {
 
+  def allPossibleMoves(chessboard: Chessboard): List[Move] = chessboard.pieces.zipWithIndex.flatMap {
+    case (row, y) => row.zipWithIndex.map {
+      case (piece, x) => piece match {
+        case Some(p) =>
+          if (p.colour == chessboard.nextColour) {
+            Rules.possibleMoves(chessboard, Position(x, y))
+          } else {
+            List()
+          }
+        case None => List()
+      }
+
+    }
+  }.flatten
+
+
   def possibleMoves(chessboard: Chessboard, position: Position): List[Move] = {
     val pieceAtPosition = Chessboard.pieceAtPosition(chessboard, position)
     pieceAtPosition match {
