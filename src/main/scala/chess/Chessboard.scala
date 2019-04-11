@@ -1,6 +1,6 @@
 package chess
 
-case class Chessboard(pieces: List[List[Option[Piece]]], nextColour: Colour) {}
+case class Chessboard(pieces: Array[Array[Option[Piece]]], nextColour: Colour) {}
 
 case object Chessboard {
 
@@ -19,23 +19,27 @@ case object Chessboard {
     move match {
       case standardMove: StandardMove =>
         val pieceToMove = pieceAtPosition(chessboard, standardMove.startPosition)
-        val movedPiece = setPiece(chessboard, pieceToMove, standardMove.endPosition)
-        val newChessboard = setPiece(movedPiece, None, standardMove.startPosition)
-        Chessboard.changeChessboardColour(newChessboard)
+
+        Chessboard(chessboard.pieces.zipWithIndex.map {
+          case (row, y) => row.zipWithIndex.map {
+            case (piece, x) =>
+              if(x == standardMove.startPosition.x && y == standardMove.startPosition.y){
+                None
+              } else if(x == standardMove.endPosition.x && y == standardMove.endPosition.y){
+                pieceToMove
+              } else {
+                piece
+              }
+          }
+        }, Chessboard.changeColour(chessboard.nextColour))
     }
   }
 
-  def setPiece(chessboard: Chessboard, maybePiece: Option[Piece], position: Position): Chessboard = {
-    val newRow: List[Option[Piece]] = chessboard.pieces(position.y).updated(position.x, maybePiece)
-    val newPieces: List[List[Option[Piece]]] = chessboard.pieces.updated(position.y, newRow)
-    Chessboard(newPieces, chessboard.nextColour)
-  }
-
-  def getPieces(chessboard: Chessboard): List[Piece] = {
+  def getPieces(chessboard: Chessboard): Array[Piece] = {
     chessboard.pieces.flatten.filter(_.isDefined).map(_.get)
   }
 
-  def getPiecesOfColour(chessboard: Chessboard, colour: Colour): List[Piece] = {
+  def getPiecesOfColour(chessboard: Chessboard, colour: Colour): Array[Piece] = {
     getPieces(chessboard).filter(_.colour.equals(colour))
   }
 

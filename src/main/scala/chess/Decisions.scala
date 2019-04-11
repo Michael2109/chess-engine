@@ -6,7 +6,7 @@ object Decisions {
 
 
     // Apply the moves and see which filter down to the best moves
-    Rules.allPossibleMoves(chessboard).maxBy(move =>
+    Rules.allPossibleMovesForColour(chessboard, chessboard.nextColour).maxBy(move =>
       minimax(4, Chessboard.makeMove(chessboard, move), Int.MinValue, Int.MaxValue)
     )
   }
@@ -32,74 +32,54 @@ object Decisions {
     }.sum
   }
 
-  def minimax(depth: Int, chessboard: Chessboard, alpha: Int, beta: Int): Int = {
+  def minimax(depth: Int, chessboard: Chessboard, min: Int, max: Int): Int = {
     if (depth == 0) {
       chessboard.nextColour match {
         case White => evaluateChessboard(chessboard)
         case Black => -evaluateChessboard(chessboard)
       }
     } else {
-      val possibleNextMoves: Stream[Move] = Rules.allPossibleMoves(chessboard).toStream
+
+      val possibleNextMoves: Array[Move] = Rules.allPossibleMoves(chessboard)
       var continue = true
       chessboard.nextColour match {
         case White => {
-
-          possibleNextMoves.map(move => {
+          var v = min
+          possibleNextMoves.par.map(move => {
             if (continue) {
-              val value = minimax(depth - 1, Chessboard.makeMove(chessboard, move), alpha, beta)
-              val newAlpha = math.max(alpha, value)
-              if (newAlpha >= beta) {
+              val value = minimax(depth - 1, Chessboard.makeMove(chessboard, move), min, max)
+              if(value > v){
+                v = value
+              }
+              if(v > max){
+
                 continue = false
               }
               value
             } else {
-              0
+              Int.MinValue
             }
           }).max
         }
         case Black =>
-          possibleNextMoves.map(move => {
+          var v = max
+          possibleNextMoves.par.map(move => {
             if (continue) {
-              val value = minimax(depth - 1, Chessboard.makeMove(chessboard, move), alpha, beta)
-              val newBeta = math.min(beta, value)
-              if (alpha >= newBeta) {
+              val value = minimax(depth - 1, Chessboard.makeMove(chessboard, move), min, max)
+              if(value < v){
+                v = value
+              }
+              if(v < min){
                 continue = false
               }
               value
             } else {
-              0
+              Int.MaxValue
             }
           }).min
       }
     }
   }
-
-  /**
-    *
-    * *
-    * function alphabeta(node, depth, α, β, maximizingPlayer) is
-    * if depth = 0 or node is a terminal node then
-    * return the heuristic value of node
-    * if maximizingPlayer then
-    * value := −∞
-    * for each child of node do
-    * value := max(value, alphabeta(child, depth − 1, α, β, FALSE))
-    * α := max(α, value)
-    * if α ≥ β then
-    * break (* β cut-off *)
-    * return value
-    * else
-    * value := +∞
-    * for each child of node do
-    * value := min(value, alphabeta(child, depth − 1, α, β, TRUE))
-    * β := min(β, value)
-    * if α ≥ β then
-    * break (* α cut-off *)
-    * return value
-    *
-    * @param chessboard
-    * @return
-    */
 
   def checkmate(chessboard: Chessboard): Option[Colour] = {
     val whitePieces = Chessboard.getPiecesOfColour(chessboard, White)

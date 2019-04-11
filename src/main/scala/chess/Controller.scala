@@ -17,8 +17,8 @@ class Controller {
   }
 
   def createInitialChessboard(): Chessboard = {
-    val pieces: List[List[Option[Piece]]] = List(
-      List(
+    val pieces: Array[Array[Option[Piece]]] = Array(
+      Array(
         Option.apply(Piece(Rook, Black)),
         Option.apply(Piece(Knight, Black)),
         Option.apply(Piece(Bishop, Black)),
@@ -28,7 +28,7 @@ class Controller {
         Option.apply(Piece(Knight, Black)),
         Option.apply(Piece(Rook, Black))
       ),
-      List(
+      Array(
         Option.apply(Piece(Pawn, Black)),
         Option.apply(Piece(Pawn, Black)),
         Option.apply(Piece(Pawn, Black)),
@@ -38,11 +38,11 @@ class Controller {
         Option.apply(Piece(Pawn, Black)),
         Option.apply(Piece(Pawn, Black))
       ),
-      List(None, None, None, None, None, None, None, None),
-      List(None, None, None, None, None, None, None, None),
-      List(None, None, None, None, None, None, None, None),
-      List(None, None, None, None, None, None, None, None),
-      List(
+      Array(None, None, None, None, None, None, None, None),
+      Array(None, None, None, None, None, None, None, None),
+      Array(None, None, None, None, None, None, None, None),
+      Array(None, None, None, None, None, None, None, None),
+      Array(
         Option.apply(Piece(Pawn, White)),
         Option.apply(Piece(Pawn, White)),
         Option.apply(Piece(Pawn, White)),
@@ -52,7 +52,7 @@ class Controller {
         Option.apply(Piece(Pawn, White)),
         Option.apply(Piece(Pawn, White))
       ),
-      List(
+      Array(
         Option.apply(Piece(Rook, White)),
         Option.apply(Piece(Knight, White)),
         Option.apply(Piece(Bishop, White)),
