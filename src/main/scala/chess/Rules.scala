@@ -3,7 +3,7 @@ package chess
 object Rules {
 
   def allPossibleMoves(chessboard: Chessboard): Array[Move] = chessboard.pieces.zipWithIndex.flatMap {
-    case (row, y) => row.zipWithIndex.par.map {
+    case (row, y) => row.zipWithIndex.map {
       case (piece, x) => piece match {
         case Some(_) => Rules.possibleMoves(chessboard, Position(x, y))
         case None => List()
@@ -13,7 +13,7 @@ object Rules {
   }.flatten
 
   def allPossibleMovesForColour(chessboard: Chessboard, colour: Colour): Array[Move] = chessboard.pieces.zipWithIndex.flatMap {
-    case (row, y) => row.zipWithIndex.par.map {
+    case (row, y) => row.zipWithIndex.map {
       case (piece, x) => piece match {
         case Some(p) =>
           if (p.colour == chessboard.nextColour) {
@@ -31,18 +31,17 @@ object Rules {
   def possibleMoves(chessboard: Chessboard, position: Position): List[Move] = {
     val pieceAtPosition = Chessboard.pieceAtPosition(chessboard, position)
     pieceAtPosition match {
-      case Some(piece) => {
+      case Some(piece) =>
         piece match {
           case Piece(pieceType, colour) => pieceType match {
-            case Rook => rookMoves(chessboard, position, colour)
-            case Knight => knightMoves(chessboard, position, colour)
-            case Bishop => bishopMoves(chessboard, position, colour)
-            case Queen => queenMoves(chessboard, position, colour)
-            case King => kingMoves(chessboard, position, colour)
-            case Pawn => pawnMoves(chessboard, position, colour)
+            case _: Rook => rookMoves(chessboard, position, colour)
+            case _: Knight => knightMoves(chessboard, position, colour)
+            case _: Bishop => bishopMoves(chessboard, position, colour)
+            case _:Queen => queenMoves(chessboard, position, colour)
+            case _:King => kingMoves(chessboard, position, colour)
+            case pawn: Pawn => pawnMoves(chessboard, position, colour, pawn)
           }
         }
-      }
       case None => List()
     }
   }
@@ -73,10 +72,10 @@ object Rules {
     directions.flatMap(direction => movesInDirection(chessboard, position, direction, colour, 1))
   }
 
-  def pawnMoves(chessboard: Chessboard, position: Position, colour: Colour): List[Move] = {
+  def pawnMoves(chessboard: Chessboard, position: Position, colour: Colour, pawn: Pawn): List[Move] = {
 
     val forwardDirection = if (colour == White) Position(0, -1) else Position(0, 1)
-    val forwardMove: List[Move] = movesInDirection(chessboard, position, forwardDirection, colour, if())
+    val forwardMove: List[Move] = movesInDirection(chessboard, position, forwardDirection, colour, if(pawn.firstMove) 2 else 1)
 
 
     val attackDirections: List[Position] = if (colour == White) List(Position(-1, -1), Position(1, -1)) else List(Position(-1, 1), Position(1, 1))
@@ -93,10 +92,10 @@ object Rules {
       val nextPosition = Position.addPositions(currentPosition, direction)
       val nextMove = StandardMove(startPosition, nextPosition)
       if (movesLeft != 0 && Position.validPosition(nextPosition)) {
-        if (takingAPiece(chessboard, nextMove)) {
-          List(nextMove)
-        } else if (movingToEmptySpace(chessboard, nextMove)) {
+        if (movingToEmptySpace(chessboard, nextMove)) {
           movesInDirection(chessboard, startPosition, nextPosition, direction, colour, (movesLeft - 1)) ++ List(nextMove)
+        } else if (takingAPiece(chessboard, nextMove)) {
+          List(nextMove)
         } else {
           List()
         }

@@ -6,19 +6,21 @@ object Decisions {
 
 
     // Apply the moves and see which filter down to the best moves
-    Rules.allPossibleMovesForColour(chessboard, chessboard.nextColour).maxBy(move =>
-      minimax(4, Chessboard.makeMove(chessboard, move), Int.MinValue, Int.MaxValue)
-    )
+    Rules.allPossibleMovesForColour(chessboard, chessboard.nextColour).maxBy(move => {
+      val score = minimax(3, Chessboard.makeMove(chessboard, move), Int.MinValue, Int.MaxValue)
+      Chessboard.undoMove(chessboard)
+      score
+    })
   }
 
   def pieceCost(pieceType: PieceType): Int = {
     pieceType match {
-      case Rook => 50
-      case Knight => 30
-      case Bishop => 30
-      case Queen => 90
-      case King => 900
-      case Pawn => 10
+      case _: Rook => 50
+      case _: Knight => 30
+      case _: Bishop => 30
+      case _: Queen => 90
+      case _: King => 900
+      case _: Pawn => 10
     }
   }
 
@@ -43,16 +45,16 @@ object Decisions {
       val possibleNextMoves: Array[Move] = Rules.allPossibleMoves(chessboard)
       var continue = true
       chessboard.nextColour match {
-        case White => {
+        case White =>
           var v = min
-          possibleNextMoves.par.map(move => {
+          possibleNextMoves.map(move => {
             if (continue) {
               val value = minimax(depth - 1, Chessboard.makeMove(chessboard, move), min, max)
-              if(value > v){
+              Chessboard.undoMove(chessboard)
+              if (value > v) {
                 v = value
               }
-              if(v > max){
-
+              if (v > max) {
                 continue = false
               }
               value
@@ -60,16 +62,16 @@ object Decisions {
               Int.MinValue
             }
           }).max
-        }
         case Black =>
           var v = max
-          possibleNextMoves.par.map(move => {
+          possibleNextMoves.map(move => {
             if (continue) {
               val value = minimax(depth - 1, Chessboard.makeMove(chessboard, move), min, max)
-              if(value < v){
+              Chessboard.undoMove(chessboard)
+              if (value < v) {
                 v = value
               }
-              if(v < min){
+              if (v < min) {
                 continue = false
               }
               value

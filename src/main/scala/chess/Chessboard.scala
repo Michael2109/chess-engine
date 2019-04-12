@@ -1,5 +1,7 @@
 package chess
 
+import scala.collection.mutable
+
 case class Chessboard(pieces: Array[Array[Option[Piece]]], nextColour: Colour) {}
 
 case object Chessboard {
@@ -15,25 +17,41 @@ case object Chessboard {
     }
   }
 
-  def makeMove(chessboard: Chessboard, move: Move): Chessboard = {
-    move match {
-      case standardMove: StandardMove =>
-        val pieceToMove = pieceAtPosition(chessboard, standardMove.startPosition)
+  val changes: mutable.Map[Position, Option[Piece]] = mutable.HashMap()
 
-        Chessboard(chessboard.pieces.zipWithIndex.map {
-          case (row, y) => row.zipWithIndex.map {
-            case (piece, x) =>
-              if(x == standardMove.startPosition.x && y == standardMove.startPosition.y){
-                None
-              } else if(x == standardMove.endPosition.x && y == standardMove.endPosition.y){
-                pieceToMove
-              } else {
-                piece
-              }
+  def makeMove(chessboard: Chessboard, move: Move): Chessboard = {
+    changes.clear()
+    move match {
+      case StandardMove(startPosition, endPosition) =>
+        val pieceToMove = pieceAtPosition(chessboard, startPosition)
+
+        val updatedPieceToMove = pieceToMove match {
+          case Some(piece) => piece match {
+            case piece: Piece => piece.pieceType match {
+              case _: Pawn => Option.apply(Piece(Pawn(false), piece.colour))
+              case _ => Some(piece)
+            }
           }
-        }, Chessboard.changeColour(chessboard.nextColour))
+        }
+
+        changes += (startPosition -> pieceToMove)
+        changes += (endPosition -> pieceAtPosition(chessboard, endPosition))
+
+        chessboard.pieces(endPosition.y)(endPosition.x) = updatedPieceToMove
+        chessboard.pieces(startPosition.y)(startPosition.x) = None
     }
+
+    Chessboard.changeChessboardColour(chessboard)
   }
+
+  def undoMove(chessboard: Chessboard): Chessboard = {
+    changes.foreach(entry => {
+      chessboard.pieces(entry._1.y)(entry._1.x)  = entry._2
+    })
+    Chessboard.changeChessboardColour(chessboard)
+  }
+
+
 
   def getPieces(chessboard: Chessboard): Array[Piece] = {
     chessboard.pieces.flatten.filter(_.isDefined).map(_.get)

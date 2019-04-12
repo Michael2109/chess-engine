@@ -18,7 +18,6 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
   val squareHeight = 80
 
 
-
   addMouseListener(this)
 
   override def paintComponent(g: Graphics): Unit = {
@@ -83,7 +82,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
     }
   }
 
-  private def isAI(colour: Colour): Boolean ={
+  private def isAI(colour: Colour): Boolean = {
     colour match {
       case White => false
       case Black => true
@@ -107,12 +106,12 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
 
   def pieceTypeToString(pieceType: PieceType): String = {
     pieceType match {
-      case Pawn => "P"
-      case Rook => "R"
-      case Bishop => "B"
-      case Queen => "Q"
-      case King => "K"
-      case Knight => "N"
+      case _: Pawn => "P"
+      case _: Rook => "R"
+      case _: Bishop => "B"
+      case _: Queen => "Q"
+      case _: King => "K"
+      case _: Knight => "N"
     }
   }
 
@@ -144,7 +143,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
       }
       repaint()
 
-      if(isAI(controller.chessboard.nextColour)){
+      if (isAI(controller.chessboard.nextColour)) {
         controller.applyBestMove()
         repaint()
       }
