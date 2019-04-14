@@ -46,7 +46,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
       }
     }
 
-    // Draw available moves
+    // Draw available move
     selectedMoves.foreach {
       case StandardMove(startPosition, endPosition) => {
         val startPositionX = startPosition.x * squareWidth
@@ -123,7 +123,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
 
     if (e.getButton == 1) {
       selectedMoves.clear()
-      Chessboard.pieceColourAtPosition(controller.chessboard, selectedPosition) match {
+      controller.chessboard.pieceColourAtPosition(selectedPosition) match {
         case Some(colour) => if (colour.equals(controller.chessboard.nextColour)) {
           selectedMoves ++= Rules.possibleMoves(controller.chessboard, selectedPosition)
           repaint()

@@ -2,13 +2,16 @@ package chess
 
 object Decisions {
 
+  val MoveDepth: Int = 3
+
   def getBestMove(chessboard: Chessboard): Move = {
 
 
-    // Apply the moves and see which filter down to the best moves
+    // Apply the move and see which filter down to the best move
     Rules.allPossibleMovesForColour(chessboard, chessboard.nextColour).maxBy(move => {
-      val score = minimax(3, Chessboard.makeMove(chessboard, move), Int.MinValue, Int.MaxValue)
-      Chessboard.undoMove(chessboard)
+      chessboard.makeMove(move)
+      val score = minimax(MoveDepth, chessboard, Int.MinValue, Int.MaxValue)
+      chessboard.undoMove()
       score
     })
   }
@@ -25,13 +28,10 @@ object Decisions {
   }
 
   def evaluateChessboard(chessboard: Chessboard): Int = {
-    chessboard.pieces.flatten.map {
-      case Some(piece) => piece.colour match {
+    chessboard.getPieces().map(piece => piece.colour match {
         case White => pieceCost(piece.pieceType)
         case Black => -pieceCost(piece.pieceType)
-      }
-      case None => 0
-    }.sum
+    }).sum
   }
 
   def minimax(depth: Int, chessboard: Chessboard, min: Int, max: Int): Int = {
@@ -49,8 +49,9 @@ object Decisions {
           var v = min
           possibleNextMoves.map(move => {
             if (continue) {
-              val value = minimax(depth - 1, Chessboard.makeMove(chessboard, move), min, max)
-              Chessboard.undoMove(chessboard)
+              chessboard.makeMove(move)
+              val value = minimax(depth - 1, chessboard, min, max)
+              chessboard.undoMove()
               if (value > v) {
                 v = value
               }
@@ -66,8 +67,9 @@ object Decisions {
           var v = max
           possibleNextMoves.map(move => {
             if (continue) {
-              val value = minimax(depth - 1, Chessboard.makeMove(chessboard, move), min, max)
-              Chessboard.undoMove(chessboard)
+              chessboard.makeMove(move)
+              val value = minimax(depth - 1, chessboard, min, max)
+              chessboard.undoMove()
               if (value < v) {
                 v = value
               }
@@ -84,8 +86,8 @@ object Decisions {
   }
 
   def checkmate(chessboard: Chessboard): Option[Colour] = {
-    val whitePieces = Chessboard.getPiecesOfColour(chessboard, White)
-    val blackPieces = Chessboard.getPiecesOfColour(chessboard, Black)
+    val whitePieces = chessboard.getPiecesOfColour(White)
+    val blackPieces = chessboard.getPiecesOfColour(Black)
 
     if (!whitePieces.exists(_.pieceType == King)) {
       Option.apply(Black)

@@ -1,29 +1,31 @@
 package chess
 
+import scala.collection.immutable.Stack
 import scala.collection.mutable
 
-case class Chessboard(pieces: Array[Array[Option[Piece]]], nextColour: Colour) {}
+class Chessboard(piecesInit: Array[Array[Option[Piece]]], nextColourInit: Colour) {
 
-case object Chessboard {
+  val pieces: Array[Array[Option[Piece]]] = piecesInit
+  var nextColour: Colour = nextColourInit
 
-  def pieceAtPosition(chessboard: Chessboard, position: Position): Option[Piece] = {
-    chessboard.pieces(position.y)(position.x)
+  def pieceAtPosition(position: Position): Option[Piece] = {
+    pieces(position.y)(position.x)
   }
 
-  def pieceColourAtPosition(chessboard: Chessboard, position: Position): Option[Colour] = {
-    pieceAtPosition(chessboard, position) match {
+  def pieceColourAtPosition(position: Position): Option[Colour] = {
+    pieceAtPosition(position) match {
       case Some(piece) => Some(piece.colour)
       case None => None
     }
   }
 
-  val changes: mutable.Map[Position, Option[Piece]] = mutable.HashMap()
+  val moveHistory: mutable.Stack[Stack[(Position, Option[Piece])]] = mutable.Stack()
 
-  def makeMove(chessboard: Chessboard, move: Move): Chessboard = {
-    changes.clear()
+  def makeMove(move: Move): Unit = {
     move match {
       case StandardMove(startPosition, endPosition) =>
-        val pieceToMove = pieceAtPosition(chessboard, startPosition)
+
+        val pieceToMove = pieceAtPosition(startPosition)
 
         val updatedPieceToMove = pieceToMove match {
           case Some(piece) => piece match {
@@ -32,43 +34,35 @@ case object Chessboard {
               case _ => Some(piece)
             }
           }
+          case None => throw new Exception("No piece found: " + startPosition)
         }
 
-        changes += (startPosition -> pieceToMove)
-        changes += (endPosition -> pieceAtPosition(chessboard, endPosition))
+        moveHistory.push(Stack((startPosition, pieceToMove), (endPosition, pieceAtPosition(endPosition))))
 
-        chessboard.pieces(endPosition.y)(endPosition.x) = updatedPieceToMove
-        chessboard.pieces(startPosition.y)(startPosition.x) = None
+        pieces(endPosition.y)(endPosition.x) = updatedPieceToMove
+        pieces(startPosition.y)(startPosition.x) = None
     }
 
-    Chessboard.changeChessboardColour(chessboard)
+    nextColour = Colour.changeColour(nextColour)
   }
 
-  def undoMove(chessboard: Chessboard): Chessboard = {
-    changes.foreach(entry => {
-      chessboard.pieces(entry._1.y)(entry._1.x)  = entry._2
+  def undoMove(): Unit = {
+
+    val lastMoves = moveHistory.pop()
+    lastMoves.foreach(move => {
+      pieces(move._1.y)(move._1.x) = move._2
     })
-    Chessboard.changeChessboardColour(chessboard)
+
+
+    nextColour = Colour.changeColour(nextColour)
+
   }
 
-
-
-  def getPieces(chessboard: Chessboard): Array[Piece] = {
-    chessboard.pieces.flatten.filter(_.isDefined).map(_.get)
+  def getPieces(): Array[Piece] = {
+    pieces.flatten.filter(_.isDefined).map(_.get)
   }
 
-  def getPiecesOfColour(chessboard: Chessboard, colour: Colour): Array[Piece] = {
-    getPieces(chessboard).filter(_.colour.equals(colour))
-  }
-
-  def changeChessboardColour(chessboard: Chessboard): Chessboard = {
-    Chessboard(chessboard.pieces, changeColour(chessboard.nextColour))
-  }
-
-  def changeColour(colour: Colour): Colour = {
-    colour match {
-      case White => Black
-      case Black => White
-    }
+  def getPiecesOfColour(colour: Colour): Array[Piece] = {
+    getPieces().filter(_.colour.equals(colour))
   }
 }

@@ -29,7 +29,7 @@ object Rules {
 
 
   def possibleMoves(chessboard: Chessboard, position: Position): List[Move] = {
-    val pieceAtPosition = Chessboard.pieceAtPosition(chessboard, position)
+    val pieceAtPosition = chessboard.pieceAtPosition(position)
     pieceAtPosition match {
       case Some(piece) =>
         piece match {
@@ -82,7 +82,7 @@ object Rules {
     val attackMoves: List[Move] = attackDirections.flatMap(direction => movesInDirection(chessboard, position, direction, colour, 1)).filter(takingAPiece(chessboard, _))
 
     forwardMove.filter(move => move match {
-      case StandardMove(_, endPosition) => Chessboard.pieceColourAtPosition(chessboard, endPosition).isEmpty
+      case StandardMove(_, endPosition) => chessboard.pieceColourAtPosition(endPosition).isEmpty
     }) ++ attackMoves
   }
 
@@ -111,8 +111,8 @@ object Rules {
   private def takingAPiece(chessboard: Chessboard, move: Move): Boolean = {
     move match {
       case StandardMove(startPosition, endPosition) =>
-        val pieceColourStart = Chessboard.pieceColourAtPosition(chessboard, startPosition)
-        val pieceColourEnd = Chessboard.pieceColourAtPosition(chessboard, endPosition)
+        val pieceColourStart = chessboard.pieceColourAtPosition(startPosition)
+        val pieceColourEnd = chessboard.pieceColourAtPosition(endPosition)
         val differentColours = pieceColourStart match {
           case Some(colourA) => pieceColourEnd match {
             case Some(colourB) => colourB != colourA
@@ -127,7 +127,7 @@ object Rules {
   private def movingToEmptySpace(chessboard: Chessboard, move: Move): Boolean = {
     move match {
       case StandardMove(_, endPosition) =>
-        Chessboard.pieceAtPosition(chessboard, endPosition).isEmpty
+        chessboard.pieceAtPosition(endPosition).isEmpty
 
     }
   }
