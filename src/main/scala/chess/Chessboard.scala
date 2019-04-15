@@ -3,10 +3,20 @@ package chess
 import scala.collection.immutable.Stack
 import scala.collection.mutable
 
-class Chessboard(piecesInit: Array[Array[Option[Piece]]], nextColourInit: Colour) {
+private class Pieces extends Enumeration {
+  val WhitePieces,
+  BlackPieces,
+  Pawns,
+  Knights,
+  Bishops,
+  Rooks,
+  Queens,
+  Kings = Value
+}
 
-  val pieces: Array[Array[Option[Piece]]] = piecesInit
-  var nextColour: Colour = nextColourInit
+class Chessboard(piecesBB: Array[Long]) {
+
+  var whiteTurn: Boolean = true
 
   def pieceAtPosition(position: Position): Option[Piece] = {
     pieces(position.y)(position.x)
@@ -22,7 +32,7 @@ class Chessboard(piecesInit: Array[Array[Option[Piece]]], nextColourInit: Colour
   val moveHistory: mutable.Stack[Stack[(Position, Option[Piece])]] = mutable.Stack()
 
   def makeMove(move: Move): Unit = {
-    move match {
+/*    move match {
       case StandardMove(startPosition, endPosition) =>
 
         val pieceToMove = pieceAtPosition(startPosition)
@@ -43,19 +53,20 @@ class Chessboard(piecesInit: Array[Array[Option[Piece]]], nextColourInit: Colour
         pieces(startPosition.y)(startPosition.x) = None
     }
 
-    nextColour = Colour.changeColour(nextColour)
+    nextColour = Colour.changeColour(nextColour)*/
   }
 
   def undoMove(): Unit = {
-
+/*
     val lastMoves = moveHistory.pop()
     lastMoves.foreach(move => {
       pieces(move._1.y)(move._1.x) = move._2
     })
 
 
-    nextColour = Colour.changeColour(nextColour)
+    nextColour = Colour.changeColour(nextColour)*/
 
+    whiteTurn = !whiteTurn
   }
 
   def getPieces(): Array[Piece] = {
@@ -65,4 +76,31 @@ class Chessboard(piecesInit: Array[Array[Option[Piece]]], nextColourInit: Colour
   def getPiecesOfColour(colour: Colour): Array[Piece] = {
     getPieces().filter(_.colour.equals(colour))
   }
+
+  def getPieceSet(pieceType: Byte): Long = pieceBB(pieceType)
+
+  def getWhitePawns: Long = piecesBB(PieceType.Pawn) & piecesBB(PieceType.WhitePiece)
+
+  def getBlackPawns: Long = piecesBB(PieceType.Pawn) & piecesBB(PieceType.BlackPiece)
+
+  def getWhiteRook: Long = piecesBB(PieceType.Rook) & piecesBB(PieceType.WhitePiece)
+
+  def getBlackRook: Long = piecesBB(PieceType.Rook) & piecesBB(PieceType.BlackPiece)
+
+  def getWhiteKnight: Long = piecesBB(PieceType.Knight) & piecesBB(PieceType.WhitePiece)
+
+  def getBlackKnight: Long = piecesBB(PieceType.Knight) & piecesBB(PieceType.BlackPiece)
+
+  def getWhiteBishop: Long = piecesBB(PieceType.Bishop) & piecesBB(PieceType.WhitePiece)
+
+  def getBlackBishop: Long = piecesBB(PieceType.Bishop) & piecesBB(PieceType.BlackPiece)
+
+  def getWhiteQueen: Long = piecesBB(PieceType.Queen) & piecesBB(PieceType.WhitePiece)
+
+  def getBlackQueen: Long = piecesBB(PieceType.Queen) & piecesBB(PieceType.BlackPiece)
+
+  def getWhiteKing: Long = piecesBB(PieceType.King) & piecesBB(PieceType.WhitePiece)
+
+  def getBlackKing: Long = piecesBB(PieceType.King) & piecesBB(PieceType.BlackPiece)
+
 }
