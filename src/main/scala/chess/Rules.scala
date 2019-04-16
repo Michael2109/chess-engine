@@ -2,6 +2,18 @@ package chess
 
 object Rules {
 
+  val PawnMoves: List[Short] = List(8, 9, 7, 16)
+
+  val RookMoves: List[Short] = List(8, 16, 24, 32, 40, 48, 56, 1, 2, 3, 4, 5, 6, 7, -8, -16, -24, -32, -40, -48, -56, -1, -2, -3, -4, -5, -6, -7)
+
+  val KnightMoves: List[Short] = List(17, 10, -10, -17, -15, -6, 6, 15)
+
+  val BishopMoves: List[Short] = List(9, 18, 27, 36, 45, 54, 63, -7, -14, -21, -28, -35, -42, -49, -9, -18, -27, -36, -45, -54, -63, 7, 14, 21, 28, 35, 42, 49)
+
+  val QueenMoves: List[Short] = List(8, 16, 24, 32, 40, 48, 56, 9, 18, 27, 36, 45, 54, 63, 1, 2, 3, 4, 5, 6, 7, -7, -14, -21, -28, -35, -42, -49, -8, -16, -24, -32, -40, -48, -56, -9, -18, -27, -36, -45, -54, -63, -1, -2, -3, -4, -5, -6, -7, 7, 14, 21, 28, 35, 42, 49)
+
+  val KingMoves: List[Short] = List(8, 9, 1, -7, -8, -9, -1, 7)
+
   def allPossibleMoves(chessboard: Chessboard): Array[Move] = chessboard.pieces.zipWithIndex.flatMap {
     case (row, y) => row.zipWithIndex.map {
       case (piece, x) => piece match {
@@ -37,8 +49,8 @@ object Rules {
             case _: Rook => rookMoves(chessboard, position, colour)
             case _: Knight => knightMoves(chessboard, position, colour)
             case _: Bishop => bishopMoves(chessboard, position, colour)
-            case _:Queen => queenMoves(chessboard, position, colour)
-            case _:King => kingMoves(chessboard, position, colour)
+            case _: Queen => queenMoves(chessboard, position, colour)
+            case _: King => kingMoves(chessboard, position, colour)
             case pawn: Pawn => pawnMoves(chessboard, position, colour, pawn)
           }
         }
@@ -75,7 +87,7 @@ object Rules {
   def pawnMoves(chessboard: Chessboard, position: Position, colour: Colour, pawn: Pawn): List[Move] = {
 
     val forwardDirection = if (colour == White) Position(0, -1) else Position(0, 1)
-    val forwardMove: List[Move] = movesInDirection(chessboard, position, forwardDirection, colour, if(pawn.firstMove) 2 else 1)
+    val forwardMove: List[Move] = movesInDirection(chessboard, position, forwardDirection, colour, if (pawn.firstMove) 2 else 1)
 
 
     val attackDirections: List[Position] = if (colour == White) List(Position(-1, -1), Position(1, -1)) else List(Position(-1, 1), Position(1, 1))
