@@ -24,7 +24,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
     super.paintComponent(g)
 
     // Draw the squares
-
+/*
     // Draw the pieces
     controller.chessboard.pieces.zipWithIndex.foreach {
       case (pieces, yIndex) => pieces.zipWithIndex.foreach {
@@ -45,6 +45,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
         }
       }
     }
+    */
 
     // Draw available move
     selectedMoves.foreach {
@@ -62,7 +63,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
     }
 
     g.setColor(Color.WHITE)
-
+/*
     // Draw the pieces
     controller.chessboard.pieces.zipWithIndex.foreach {
       case (pieces, yIndex) => pieces.zipWithIndex.foreach {
@@ -79,7 +80,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
           }
         }
       }
-    }
+    }*/
   }
 
   private def isAI(colour: Colour): Boolean = {
@@ -88,6 +89,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
       case Black => true
     }
   }
+/*
 
   def getChessPieceImage(piece: Piece): BufferedImage = {
     piece match {
@@ -114,13 +116,14 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
       case _: Knight => "N"
     }
   }
+*/
 
   override def mouseClicked(e: MouseEvent): Unit = ()
 
   override def mousePressed(e: MouseEvent): Unit = {
 
     val selectedPosition = Position(e.getX / squareWidth, e.getY / squareHeight)
-
+/*
     if (e.getButton == 1) {
       selectedMoves.clear()
       controller.chessboard.pieceColourAtPosition(selectedPosition) match {
@@ -147,7 +150,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
         controller.applyBestMove()
         repaint()
       }
-    }
+    }*/
   }
 
   override def mouseReleased(e: MouseEvent): Unit = ()

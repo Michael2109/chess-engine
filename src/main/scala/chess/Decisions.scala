@@ -1,7 +1,7 @@
 package chess
 
 object Decisions {
-
+/*
   val MoveDepth: Int = 3
 
   def getBestMove(chessboard: Chessboard): Move = {
@@ -100,5 +100,5 @@ object Decisions {
 
   def stalemate(chessboard: Chessboard): Boolean = {
     false
-  }
+  }*/
 }

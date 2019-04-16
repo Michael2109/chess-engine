@@ -8,37 +8,62 @@ class Chessboard() {
 
   var whiteTurn: Boolean = true
 
-  val whitePawns: Long = 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15
-  val whiteRooks: Long = 56 & 63
-  val whiteKnights: Long = 0
-  val whiteBishops: Long = 0
-  val whiteQueens: Long = 0
-  val whiteKings: Long = 0
+  val whitePawn: Byte = 0
+  val whiteRook: Byte = 1
+  val whiteKnight: Byte = 2
+  val whiteBishop: Byte = 3
+  val whiteQueen: Byte = 4
+  val whiteKing: Byte = 5
+  val blackPawn: Byte = 6
+  val blackRook: Byte = 7
+  val blackKnight: Byte = 8
+  val blackBishop: Byte = 9
+  val blackQueen: Byte = 10
+  val blackKing: Byte = 11
 
-  val blackPawns: Long = 48 & 49 & 50 & 51 & 52 & 53 & 54 & 55
-  val blackRooks: Long = 0 & 7
-  val blackKnights: Long = 0
-  val blackBishops: Long = 0
-  val blackQueens: Long = 0
-  val blackKings: Long = 0
+  val pieces: Array[Long] = Array(
+    // White Pawn
+    pieceAtPosition(8) | pieceAtPosition(9) | pieceAtPosition(10) | pieceAtPosition(11) | pieceAtPosition(12) | pieceAtPosition(13) | pieceAtPosition(14) | pieceAtPosition(15),
+    // White Rook
+    pieceAtPosition(0) | pieceAtPosition(7),
+    // White Knight
+    pieceAtPosition(0),
+    // White Bishop
+    pieceAtPosition(0),
+    // White Queen
+    pieceAtPosition(0),
+    // White King
+    pieceAtPosition(0),
 
-  // https://stackoverflow.com/questions/9354860/how-to-get-the-value-of-a-bit-at-a-certain-position-from-a-byte
-  def toBitValue(position: Short): Short ={
+    // Black Pawn
+    pieceAtPosition(48) | pieceAtPosition(49) | pieceAtPosition(50) | pieceAtPosition(51) | pieceAtPosition(52) | pieceAtPosition(53) | pieceAtPosition(54) | pieceAtPosition(55),
+    // Black Rook
+    pieceAtPosition(56) | pieceAtPosition(63),
+    // Black Knight
+    pieceAtPosition(0),
+    // Black Bishop
+    pieceAtPosition(0),
+    // Black Queen
+    pieceAtPosition(0),
+    // Black King
+    pieceAtPosition(0)
+  )
 
-  }
-
+/*
   def pieceAtPosition(position: Position): Option[Piece] = {
     pieces(position.y)(position.x)
-  }
-
+  }*/
+/*
   def pieceColourAtPosition(position: Position): Option[Colour] = {
     pieceAtPosition(position) match {
       case Some(piece) => Some(piece.colour)
       case None => None
     }
-  }
+  }*/
+/*
 
   val moveHistory: mutable.Stack[Stack[(Position, Option[Piece])]] = mutable.Stack()
+*/
 
   def makeMove(move: Move): Unit = {
 /*    move match {
@@ -78,42 +103,26 @@ class Chessboard() {
     whiteTurn = !whiteTurn
   }
 
-  def getPieces(): Array[Piece] = {
-    pieces.flatten.filter(_.isDefined).map(_.get)
+  def whitePieces: Long = pieces.take(6).foldLeft(0L)(_ | _)
+
+  def blackPiece: Long = pieces.takeRight(6).foldLeft(0L)(_ | _)
+
+  def pieceAtPosition(position: Short): Long ={
+    1 << position
   }
 
-  def getPiecesOfColour(colour: Colour): Array[Piece] = {
-    getPieces().filter(_.colour.equals(colour))
+  def movePiece(pieceType: Byte, oldPosition: Short, newPosition: Short): Unit ={
+    pieces(pieceType) = pieces(pieceType) & ~pieceAtPosition(oldPosition)
+    pieces(pieceType) = pieces(pieceType) | pieceAtPosition(newPosition)
   }
 
-  def getPieceSet(pieceType: Byte): Long = piecesBB(pieceType)
+  println(boardString(whitePieces))
 
-  def getWhitePawns: Long = piecesBB(PieceType.Pawn) & piecesBB(PieceType.WhitePiece)
-
-  def getBlackPawns: Long = piecesBB(PieceType.Pawn) & piecesBB(PieceType.BlackPiece)
-
-  def getWhiteRook: Long = piecesBB(PieceType.Rook) & piecesBB(PieceType.WhitePiece)
-
-  def getBlackRook: Long = piecesBB(PieceType.Rook) & piecesBB(PieceType.BlackPiece)
-
-  def getWhiteKnight: Long = piecesBB(PieceType.Knight) & piecesBB(PieceType.WhitePiece)
-
-  def getBlackKnight: Long = piecesBB(PieceType.Knight) & piecesBB(PieceType.BlackPiece)
-
-  def getWhiteBishop: Long = piecesBB(PieceType.Bishop) & piecesBB(PieceType.WhitePiece)
-
-  def getBlackBishop: Long = piecesBB(PieceType.Bishop) & piecesBB(PieceType.BlackPiece)
-
-  def getWhiteQueen: Long = piecesBB(PieceType.Queen) & piecesBB(PieceType.WhitePiece)
-
-  def getBlackQueen: Long = piecesBB(PieceType.Queen) & piecesBB(PieceType.BlackPiece)
-
-  def getWhiteKing: Long = piecesBB(PieceType.King) & piecesBB(PieceType.WhitePiece)
-
-  def getBlackKing: Long = piecesBB(PieceType.King) & piecesBB(PieceType.BlackPiece)
-
-  def movePawn(colour: Colour, oldPosition: Long, newPosition: Long): Unit ={
-    piecesBB(PieceType.WhitePiece) = piecesBB(PieceType.WhitePiece)
+  def boardString(pieces: Long): String ={
+    val binaryString = pieces.toBinaryString
+    val paddingRequired = 64 - binaryString.length
+    val binaryStringPadded = List.fill(paddingRequired)("0") ++ binaryString
+    binaryStringPadded.grouped(8).mkString(sys.props("line.separator"))
   }
 
 }

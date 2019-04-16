@@ -13,7 +13,7 @@ object Rules {
   val QueenMoves: List[Short] = List(8, 16, 24, 32, 40, 48, 56, 9, 18, 27, 36, 45, 54, 63, 1, 2, 3, 4, 5, 6, 7, -7, -14, -21, -28, -35, -42, -49, -8, -16, -24, -32, -40, -48, -56, -9, -18, -27, -36, -45, -54, -63, -1, -2, -3, -4, -5, -6, -7, 7, 14, 21, 28, 35, 42, 49)
 
   val KingMoves: List[Short] = List(8, 9, 1, -7, -8, -9, -1, 7)
-
+/*
   def allPossibleMoves(chessboard: Chessboard): Array[Move] = chessboard.pieces.zipWithIndex.flatMap {
     case (row, y) => row.zipWithIndex.map {
       case (piece, x) => piece match {
@@ -142,5 +142,5 @@ object Rules {
         chessboard.pieceAtPosition(endPosition).isEmpty
 
     }
-  }
+  }*/
 }
