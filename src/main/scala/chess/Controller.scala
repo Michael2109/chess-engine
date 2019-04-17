@@ -2,7 +2,7 @@ package chess
 
 class Controller {
 
-  var chessboard = new Chessboard()
+  var chessboard = new Chessboard(LayoutGenerator.standardChessboard)
 
   def resetChessboard(): Unit ={/*
     chessboard = createInitialChessboard()*/

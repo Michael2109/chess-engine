@@ -14,5 +14,7 @@ class Frame extends JFrame {
   setLocationRelativeTo(null)
   setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-  setVisible(true)
+  setVisible(false)
+
+  System.exit(0)
 }

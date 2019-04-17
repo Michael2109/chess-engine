@@ -1,12 +1,86 @@
 package chess
 
-import scala.collection.immutable.Stack
 import scala.collection.mutable
 
 
-class Chessboard() {
+class Chessboard(piecesInit: Array[Long]) {
+
+  val pieces: Array[Long] = piecesInit
 
   var whiteTurn: Boolean = true
+
+  /*
+    def pieceAtPosition(position: Position): Option[Piece] = {
+      pieces(position.y)(position.x)
+    }*/
+  /*
+    def pieceColourAtPosition(position: Position): Option[Colour] = {
+      pieceAtPosition(position) match {
+        case Some(piece) => Some(piece.colour)
+        case None => None
+      }
+    }*/
+  /*
+
+
+  */
+
+  // (PieceType -> Position)
+  val moveHistory: mutable.Stack[List[(Byte, Short)]] = mutable.Stack()
+
+  def makeMove(move: Move): Unit = {
+    move match {
+      case StandardMove(pieceType, startPosition, endPosition) => {
+
+        val endPieceType = pieceTypeAtPosition(endPosition)
+        moveHistory.push(List(
+          (pieceType, startPosition),
+          (endPieceType, endPosition)
+        ))
+
+        movePiece(pieceType, startPosition, endPosition)
+      }
+    }
+    whiteTurn = !whiteTurn
+  }
+
+  def undoMove(): Unit = {
+
+    val lastMoves = moveHistory.pop()
+    lastMoves.foreach(move => if (move._1 != Chessboard.emptyPiece) {
+      (move._1, move._2)
+    })
+
+    whiteTurn = !whiteTurn
+  }
+
+  def whitePiecesBoard: Long = pieces.take(6).foldLeft(0L)(_ | _)
+
+  def blackPiecesBoard: Long = {
+    val (_, right) = pieces.splitAt(6)
+    right.foldLeft(0L)(_ | _)
+  }
+
+  def pieceTypeAtPosition(position: Short): Byte = {
+    pieces.zipWithIndex.find {
+      case (board, pieceType) => (board & 1L << position) != 0
+    } match {
+      case Some(value) => value._2.toByte
+      case None => Chessboard.emptyPiece
+    }
+  }
+
+  def placePiece(pieceType: Byte, position: Short): Unit = {
+    pieces(pieceType) = pieces(pieceType) | 1L << position
+  }
+
+  def movePiece(pieceType: Byte, oldPosition: Short, newPosition: Short): Unit = {
+    pieces(pieceType) = pieces(pieceType) & ~(1L << oldPosition)
+    pieces(pieceType) = pieces(pieceType) | 1L << newPosition
+  }
+}
+
+object Chessboard {
 
   val whitePawn: Byte = 0
   val whiteRook: Byte = 1
@@ -20,109 +94,12 @@ class Chessboard() {
   val blackBishop: Byte = 9
   val blackQueen: Byte = 10
   val blackKing: Byte = 11
+  val emptyPiece: Byte = 12
 
-  val pieces: Array[Long] = Array(
-    // White Pawn
-    pieceAtPosition(8) | pieceAtPosition(9) | pieceAtPosition(10) | pieceAtPosition(11) | pieceAtPosition(12) | pieceAtPosition(13) | pieceAtPosition(14) | pieceAtPosition(15),
-    // White Rook
-    pieceAtPosition(0) | pieceAtPosition(7),
-    // White Knight
-    pieceAtPosition(0),
-    // White Bishop
-    pieceAtPosition(0),
-    // White Queen
-    pieceAtPosition(0),
-    // White King
-    pieceAtPosition(0),
+  def toBinary(number: Long, digits: Int = 8) = String.format("%" + digits + "s", number.toBinaryString).replace(' ', '0')
 
-    // Black Pawn
-    pieceAtPosition(48) | pieceAtPosition(49) | pieceAtPosition(50) | pieceAtPosition(51) | pieceAtPosition(52) | pieceAtPosition(53) | pieceAtPosition(54) | pieceAtPosition(55),
-    // Black Rook
-    pieceAtPosition(56) | pieceAtPosition(63),
-    // Black Knight
-    pieceAtPosition(0),
-    // Black Bishop
-    pieceAtPosition(0),
-    // Black Queen
-    pieceAtPosition(0),
-    // Black King
-    pieceAtPosition(0)
-  )
-
-/*
-  def pieceAtPosition(position: Position): Option[Piece] = {
-    pieces(position.y)(position.x)
-  }*/
-/*
-  def pieceColourAtPosition(position: Position): Option[Colour] = {
-    pieceAtPosition(position) match {
-      case Some(piece) => Some(piece.colour)
-      case None => None
-    }
-  }*/
-/*
-
-  val moveHistory: mutable.Stack[Stack[(Position, Option[Piece])]] = mutable.Stack()
-*/
-
-  def makeMove(move: Move): Unit = {
-/*    move match {
-      case StandardMove(startPosition, endPosition) =>
-
-        val pieceToMove = pieceAtPosition(startPosition)
-
-        val updatedPieceToMove = pieceToMove match {
-          case Some(piece) => piece match {
-            case piece: Piece => piece.pieceType match {
-              case _: Pawn => Option.apply(Piece(Pawn(false), piece.colour))
-              case _ => Some(piece)
-            }
-          }
-          case None => throw new Exception("No piece found: " + startPosition)
-        }
-
-        moveHistory.push(Stack((startPosition, pieceToMove), (endPosition, pieceAtPosition(endPosition))))
-
-        pieces(endPosition.y)(endPosition.x) = updatedPieceToMove
-        pieces(startPosition.y)(startPosition.x) = None
-    }
-
-    nextColour = Colour.changeColour(nextColour)*/
+  def boardString(pieces: Long): String = {
+    val binaryString = Chessboard.toBinary(pieces, 64)
+    binaryString.grouped(8).map(_.reverse).mkString(sys.props("line.separator"))
   }
-
-  def undoMove(): Unit = {
-/*
-    val lastMoves = moveHistory.pop()
-    lastMoves.foreach(move => {
-      pieces(move._1.y)(move._1.x) = move._2
-    })
-
-
-    nextColour = Colour.changeColour(nextColour)*/
-
-    whiteTurn = !whiteTurn
-  }
-
-  def whitePieces: Long = pieces.take(6).foldLeft(0L)(_ | _)
-
-  def blackPiece: Long = pieces.takeRight(6).foldLeft(0L)(_ | _)
-
-  def pieceAtPosition(position: Short): Long ={
-    1 << position
-  }
-
-  def movePiece(pieceType: Byte, oldPosition: Short, newPosition: Short): Unit ={
-    pieces(pieceType) = pieces(pieceType) & ~pieceAtPosition(oldPosition)
-    pieces(pieceType) = pieces(pieceType) | pieceAtPosition(newPosition)
-  }
-
-  println(boardString(whitePieces))
-
-  def boardString(pieces: Long): String ={
-    val binaryString = pieces.toBinaryString
-    val paddingRequired = 64 - binaryString.length
-    val binaryStringPadded = List.fill(paddingRequired)("0") ++ binaryString
-    binaryStringPadded.grouped(8).mkString(sys.props("line.separator"))
-  }
-
 }

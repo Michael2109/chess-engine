@@ -46,10 +46,10 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
       }
     }
     */
-
+/*
     // Draw available move
     selectedMoves.foreach {
-      case StandardMove(startPosition, endPosition) => {
+      case StandardMove(pieceType, startPosition, endPosition) => {
         val startPositionX = startPosition.x * squareWidth
         val startPositionY = startPosition.y * squareHeight
 
@@ -60,7 +60,7 @@ class Panel(controller: Controller) extends JPanel with MouseListener {
         g.setColor(Color.YELLOW)
         g.fillRect(endPositionX, endPositionY, squareWidth, squareHeight)
       }
-    }
+    }*/
 
     g.setColor(Color.WHITE)
 /*
