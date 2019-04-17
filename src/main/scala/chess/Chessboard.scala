@@ -54,12 +54,13 @@ class Chessboard(piecesInit: Array[Long]) {
     whiteTurn = !whiteTurn
   }
 
-  def whitePiecesBoard: Long = pieces.take(6).foldLeft(0L)(_ | _)
+  def whitePieceBoards: Array[Long] = pieces.take(6)
 
-  def blackPiecesBoard: Long = {
-    val (_, right) = pieces.splitAt(6)
-    right.foldLeft(0L)(_ | _)
-  }
+  def blackPieceBoards: Array[Long] = pieces.splitAt(6)._2
+
+  def allWhitePieces: Long = whitePieceBoards.foldLeft(0L)(_ | _)
+
+  def allBlackPieces: Long = blackPieceBoards.foldLeft(0L)(_ | _)
 
   def pieceTypeAtPosition(position: Short): Byte = {
     pieces.zipWithIndex.find {

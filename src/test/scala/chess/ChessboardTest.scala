@@ -7,39 +7,6 @@ import org.scalatest.{FunSpec, Matchers}
 @RunWith(classOf[JUnitRunner])
 class ChessboardTest extends FunSpec with Matchers {
 
-  describe("Places bits at the specified position") {
-    it("Place bit at position 0") {
-      (1L << 0) shouldBe 1
-    }
-    it("Place bit at position 1") {
-      (1L << 1) shouldBe 2
-    }
-    it("Place bit at position 2") {
-      (1L << 2) shouldBe 4
-    }
-    it("Place bit at position 5") {
-      (1L << 5) shouldBe 32
-    }
-    it("Place bit at position 10") {
-      (1L << 10) shouldBe 1024
-    }
-    it("Place bit at position 20") {
-      (1L << 20) shouldBe 1048576
-    }
-    it("Place bit at position 40") {
-      (1L << 40) shouldBe 1099511627776L
-    }
-    it("Place bit at position 52") {
-      (1L << 52) shouldBe 4503599627370496L
-    }
-    it("Place bit at position 62") {
-      (1L << 62) shouldBe 4611686018427387904L
-    }
-    it("Place bit at position 63") {
-      (1L << 63) shouldBe Long.MinValue
-    }
-  }
-
   describe("Move piece from start to end position") {
     it("Move white pawn from a -> b") {
       val pieces = LayoutGenerator.emptyChessboard
