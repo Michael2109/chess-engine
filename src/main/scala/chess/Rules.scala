@@ -15,24 +15,29 @@ object Rules {
   val KingMoves: List[Short] = List(8, 9, 1, -7, -8, -9, -1, 7)
 
   def possibleMoves(chessboard: Chessboard): List[Move] = {
-    val positions = List.range(0, 63).map(_.toShort)
-    positions.map(position => {
-      if ((chessboard.pieces(Chessboard.whitePawn) & 1L << position) != 0) {
-        PawnMoves.filter(offset => offset + position < 64).map((1 << position) << _).filter(newPosition => (newPosition & chessboard.allWhitePieces) == 0).map(newPosition => StandardMove(Chessboard.whitePawn, position, newPosition.toShort))
-      } else if ((chessboard.pieces(Chessboard.whiteRook) & 1L << position) != 0) {
-        RookMoves.filter(offset => offset + position < 64).map((1 << position) << _).filter(newPosition => (newPosition & chessboard.allWhitePieces) == 0).map(newPosition => StandardMove(Chessboard.whitePawn, position, newPosition.toShort))
-      } else if ((chessboard.pieces(Chessboard.whiteKnight) & 1L << position) != 0) {
-        KnightMoves.filter(offset => offset + position < 64).map((1 << position) << _).filter(newPosition => (newPosition & chessboard.allWhitePieces) == 0).map(newPosition => StandardMove(Chessboard.whitePawn, position, newPosition.toShort))
-      } else if ((chessboard.pieces(Chessboard.whiteBishop) & 1L << position) != 0) {
-        BishopMoves.filter(offset => offset + position < 64).map((1 << position) << _).filter(newPosition => (newPosition & chessboard.allWhitePieces) == 0).map(newPosition => StandardMove(Chessboard.whitePawn, position, newPosition.toShort))
-      } else if ((chessboard.pieces(Chessboard.whiteQueen) & 1L << position) != 0) {
-        QueenMoves.filter(offset => offset + position < 64).map((1 << position) << _).filter(newPosition => (newPosition & chessboard.allWhitePieces) == 0).map(newPosition => StandardMove(Chessboard.whitePawn, position, newPosition.toShort))
-      } else if ((chessboard.pieces(Chessboard.whiteKing) & 1L << position) != 0) {
-        KingMoves.filter(offset => offset + position < 64).map((1 << position) << _).filter(newPosition => (newPosition & chessboard.allWhitePieces) == 0).map(newPosition => StandardMove(Chessboard.whitePawn, position, newPosition.toShort))
-      } else {
-        List()
-      }
-    }).flatten
+    pawnMoves(chessboard, true)
+
+    List()
+  }
+
+  def pawnMoves(chessboard: Chessboard, white: Boolean): List[Move] ={
+
+    val piecePositions = splitIntoPositions(chessboard.pieces(Chessboard.whitePawn))
+
+     val possibleMoves = PawnMoves.flatMap(move => piecePositions.filter(position => {
+       position + move < 64 && position + move >= 0
+     }).map(position => {
+       (1L << position) << move
+     }))
+
+    println(possibleMoves.map(Chessboard.boardString).mkString("\n\n"))
+
+    List()
+  }
+
+  def splitIntoPositions(pieces: Long): List[Short] ={
+    val allPositions = List.range(0, 64).map(_.toShort)
+    allPositions.filter(position => (pieces & (1L << position)) != 0)
   }
 
   /*

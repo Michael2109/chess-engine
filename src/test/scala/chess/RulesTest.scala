@@ -16,13 +16,15 @@ class RulesTest extends FunSpec with Matchers {
 
       val endPosition: Short = 24
 
+      Rules.possibleMoves(chessboard)
+/*
       println(Chessboard.boardString(pieces(Chessboard.whitePawn)))
 
       println(Rules.possibleMoves(chessboard).map(move => {
         move match {
           case standardMove: StandardMove => Chessboard.boardString(standardMove.endPosition)
         }
-      }).mkString("\n\n"))
+      }).mkString("\n\n"))*/
 
       (1L << 0) shouldBe 1
     }
